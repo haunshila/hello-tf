@@ -1,0 +1,31 @@
+digraph {
+	compound = "true"
+	newrank = "true"
+	subgraph "root" {
+		"[root] aws_s3_bucket.bucket1 (expand)" [label = "aws_s3_bucket.bucket1", shape = "box"]
+		"[root] aws_s3_bucket.bucket2 (expand)" [label = "aws_s3_bucket.bucket2", shape = "box"]
+		"[root] aws_s3_bucket.bucket3 (expand)" [label = "aws_s3_bucket.bucket3", shape = "box"]
+		"[root] data.aws_availability_zones.available (expand)" [label = "data.aws_availability_zones.available", shape = "box"]
+		"[root] data.aws_caller_identity.current (expand)" [label = "data.aws_caller_identity.current", shape = "box"]
+		"[root] output.aws_availability_zones" [label = "output.aws_availability_zones", shape = "note"]
+		"[root] output.aws_caller_info" [label = "output.aws_caller_info", shape = "note"]
+		"[root] output.greeting" [label = "output.greeting", shape = "note"]
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"]" [label = "provider[\"registry.terraform.io/hashicorp/aws\"]", shape = "diamond"]
+		"[root] aws_s3_bucket.bucket1 (expand)" -> "[root] data.aws_caller_identity.current (expand)"
+		"[root] aws_s3_bucket.bucket2 (expand)" -> "[root] aws_s3_bucket.bucket1 (expand)"
+		"[root] aws_s3_bucket.bucket3 (expand)" -> "[root] aws_s3_bucket.bucket2 (expand)"
+		"[root] data.aws_availability_zones.available (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"]"
+		"[root] data.aws_caller_identity.current (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"]"
+		"[root] meta.count-boundary (EachMode fixup)" -> "[root] aws_s3_bucket.bucket3 (expand)"
+		"[root] meta.count-boundary (EachMode fixup)" -> "[root] output.aws_availability_zones"
+		"[root] meta.count-boundary (EachMode fixup)" -> "[root] output.aws_caller_info"
+		"[root] meta.count-boundary (EachMode fixup)" -> "[root] output.greeting"
+		"[root] output.aws_availability_zones" -> "[root] data.aws_availability_zones.available (expand)"
+		"[root] output.aws_caller_info" -> "[root] data.aws_caller_identity.current (expand)"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] aws_s3_bucket.bucket3 (expand)"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] data.aws_availability_zones.available (expand)"
+		"[root] root" -> "[root] meta.count-boundary (EachMode fixup)"
+		"[root] root" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)"
+	}
+}
+
