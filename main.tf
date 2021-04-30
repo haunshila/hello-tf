@@ -58,3 +58,15 @@ resource "aws_s3_bucket" "bucketZ" {
   bucket = "${local.aws_account}-${each.key}"
 }
 
+# Iteration
+# `for` loop
+
+locals {
+  i = ["one", "two", "three"]
+  upper_list = [for item in local.i: upper(item)]
+  upper_map = {for item in local.i: item => upper(item)}
+}
+
+output "loops" {
+  value = local.upper_map
+}
