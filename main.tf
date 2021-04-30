@@ -1,20 +1,3 @@
-# Terraform version
-# Optional configuration for the Terraform Engine.
-terraform {
-  required_version = ">=0.13.0"
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 3.0"
-    }
-  }
-}
-
-provider "aws" {
-  region                  = "us-east-1"
-  shared_credentials_file = "/Users/hauyadav/terraform-projects/shared.cred/cred"
-  profile                 = "sandbox"
-}
 
 resource "aws_s3_bucket" "bucket1" {
   bucket = "${data.aws_caller_identity.current.account_id}-bucket1"
@@ -42,3 +25,36 @@ resource "aws_s3_bucket" "bucket4" {
 resource "aws_s3_bucket" "bucket5" {
   bucket = "${local.aws_account}-bucket5"
 }
+
+# Count
+# Creates Count number of resources
+resource "aws_s3_bucket" "bucketX" {
+  count = 2
+  bucket = "${local.aws_account}-bucket${count.index+6}"
+}
+
+# for_each
+# with map
+locals {
+  buckets = {
+    bucket101 = "the-bucket101"
+    bucket102 = "the-bucket102"
+  }
+}
+resource "aws_s3_bucket" "bucketY" {
+  for_each = local.buckets
+  bucket = "${local.aws_account}-${each.value}"
+}
+
+# with list
+locals {
+  bucketsList = [
+    "the-bucket-101",
+    "the-bucket-102"
+  ]
+}
+resource "aws_s3_bucket" "bucketZ" {
+  for_each = toset(local.bucketsList)
+  bucket = "${local.aws_account}-${each.key}"
+}
+
