@@ -35,3 +35,10 @@ resource "aws_s3_bucket" "bucket3" {
     aws_s3_bucket.bucket2
   ]
 }
+
+resource "aws_s3_bucket" "bucket4" {
+  bucket = var.bucket_name
+}
+resource "aws_s3_bucket" "bucket5" {
+  bucket = "${local.aws_account}-bucket5"
+}
