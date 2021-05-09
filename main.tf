@@ -1,74 +1,34 @@
 
-resource "aws_s3_bucket" "bucket1" {
-  bucket = "${data.aws_caller_identity.current.account_id}-bucket1"
+module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "2.21.0"
+
+  name = var.vpc_name
+  cidr = var.vpc_cidr
+
+  azs             = var.vpc_azs
+  private_subnets = var.vpc_private_subnets
+  public_subnets  = var.vpc_public_subnets
+
+  enable_nat_gateway = var.vpc_enable_nat_gateway
+
+  tags = var.vpc_tags
 }
 
-resource "aws_s3_bucket" "bucket2" {
-  bucket = "${data.aws_caller_identity.current.account_id}-bucket2"
+module "ec2_instances" {
+  source  = "terraform-aws-modules/ec2-instance/aws"
+  version = "2.12.0"
+
+  name           = "my-ec2-cluster"
+  instance_count = 2
+
+  ami                    = "ami-0ff8a91507f77f867"
+  instance_type          = "t2.micro"
+  vpc_security_group_ids = [module.vpc.default_security_group_id]
+  subnet_id              = module.vpc.public_subnets[0]
+
   tags = {
-    # Implicit dependency
-    dependency = aws_s3_bucket.bucket1.arn
+    Terraform   = "true"
+    Environment = "dev"
   }
-}
-
-resource "aws_s3_bucket" "bucket3" {
-  bucket = "${data.aws_caller_identity.current.account_id}-bucket3"
-  # Explicit dependency
-  depends_on = [
-    aws_s3_bucket.bucket2
-  ]
-}
-
-/*
-resource "aws_s3_bucket" "bucket4" {
-  bucket = var.bucket_name
-}
-*/
-resource "aws_s3_bucket" "bucket5" {
-  bucket = "${local.aws_account}-bucket5"
-}
-
-# Count
-# Creates Count number of resources
-resource "aws_s3_bucket" "bucketX" {
-  count = 2
-  bucket = "${local.aws_account}-bucket${count.index+6}"
-}
-
-# for_each
-# with map
-locals {
-  buckets = {
-    bucket101 = "the-bucket101"
-    bucket102 = "the-bucket102"
-  }
-}
-resource "aws_s3_bucket" "bucketY" {
-  for_each = local.buckets
-  bucket = "${local.aws_account}-${each.value}"
-}
-
-# with list
-locals {
-  bucketsList = [
-    "the-bucket-101",
-    "the-bucket-102"
-  ]
-}
-resource "aws_s3_bucket" "bucketZ" {
-  for_each = toset(local.bucketsList)
-  bucket = "${local.aws_account}-${each.key}"
-}
-
-# Iteration
-# `for` loop
-
-locals {
-  i = ["one", "two", "three"]
-  upper_list = [for item in local.i: upper(item)]
-  upper_map = {for item in local.i: item => upper(item)}
-}
-
-output "loops" {
-  value = local.upper_map
 }
